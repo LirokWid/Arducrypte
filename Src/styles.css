@@ -1,0 +1,188 @@
+/* Fond sombre pour tout le corps de la page */
+body {
+    background-color: #3D4849;
+    color: #ffffff; /* Texte en couleur claire */
+    font-family: Arial, sans-serif; /* Police de caractères */
+}
+
+/* BPM */
+/* Couleur de fond des éléments de contrôle */
+
+/* CSS for the show-bpm class */
+
+#button-grid {
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    padding: 20px;
+    display: block;
+    text-align: center;
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+#bpm-control > #bpm-slider {
+    width: 100%;
+}
+
+#bpm-display {
+    display: flex;
+    justify-items: center;
+    flex-direction: row;
+
+    justify-content: center;
+    font-size: larger;
+    color: white;
+
+    align-items: center;
+    font-variant-numeric: slashed-zero;
+    font-family: 'Motomangucode', sans-serif;
+}
+
+input[type="number"] {
+    background: rgba(0, 0, 0, 0);
+    text-align: right;
+    font-size: larger;
+    color: white;
+    border: none;
+    outline: none;
+}
+
+#bpm-setup {
+    display: flex;
+    flex-direction: row;
+'justify-content: space-around;
+}
+
+#set-reset-buttons {
+    display: flex;
+    width: fit-content;
+}
+
+.bpm-buttons {
+    width: 100px;
+}
+
+.show-bpm {
+    background-color: white; /* You can change the background color to your preference */
+    background-color: #222;
+    border-radius: 10px;
+    border-style: solid;
+    box-sizing: border-box;
+    color: #fff;
+    display: inline-block;
+    margin: 10px;
+    max-width: none;
+    min-height: 44px;
+    min-width: 10px;
+    outline: none;
+    overflow: hidden;
+    padding: 9px 20px 8px;
+    position: relative;
+    text-align: center;
+    text-transform: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    width: 100%;
+}
+
+.container {
+    display: grid;
+    grid-template-columns:  1fr 1fr;
+    gap: 20px;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: dimgrey;
+    border: 2px solid rgba(79, 100, 227, 0.2);
+}
+
+.container > div {
+    border-radius: 5px;
+    padding: 10px;
+    background-color: rgb(207, 232, 220);
+    border: 2px solid rgb(79, 185, 227);
+}
+
+.container > .container-title {
+    grid-column: 1 / 4;
+    grid-row: 1;
+    text-align: center;
+    font-size: larger;
+    height: fit-content;
+}
+
+.sub-container {
+    display: grid;
+    grid-template-columns: 1fr 0.3fr 1fr;
+}
+
+.sub-container > .sub-container-title {
+    grid-area: 1/1 / 1/5;
+    text-align: center;
+    font-size: larger;
+    height: fit-content;
+}
+
+#color-sliders {
+    grid-area: 2/1 / 4/2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+    height: available;
+}
+
+#color-display {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+    height: available;
+}
+
+
+#color_mixed {
+    height: available;
+    width: available;
+    background-color: rgb(100, 100, 100);
+}
+
+
+.color-slider {
+'display: inline-flex;
+    /* align-items items in column */
+'flex-direction: column;
+    /* center items horizontally */
+'align-items: center;
+    /* center items vertically */
+'justify-content: center; ' border: solid 2 px white;
+'vertical-align: 1; ' flex-direction: row;
+
+}
+
+.slider {
+'width: auto;
+}
+
+
+/* Boutons */
+button {
+    background-color: #333;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+/* Style des boutons au survol */
+button:hover {
+    background-color: #555;
+}
+
+/* Style du bouton actif */
+button.active {
+    background-color: #007bff; /* Bleu vif pour le bouton actif */
+    color: #ffffff;
+}

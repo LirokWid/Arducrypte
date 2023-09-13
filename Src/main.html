@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Arducrypte</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/motomangucode');
+    </style>
+
+</head>
+<body>
+
+<div id="bpm">
+    <h1>BPM set</h1>
+    <div id="bpm-control">
+        <div id="bpm-display">
+            <input type="number" id="bpm-input" min="60.0" max="210.0" value="140">
+            BPM
+        </div>
+        <input type="range" id="bpm-slider" min="60.0" max="210.0" value="140" step="0.1">
+        <div id="bpm-setup">
+            <div id="set-reset-buttons">
+                <button id="reset-bpm-button" class="bpm-buttons">RESET</button>
+                <button id="tap-bpm-button" class="bpm-buttons">TAP BPM</button>
+            </div>
+            <div id="show-bpm1" class="show-bpm"></div>
+            <div id="show-bpm2" class="show-bpm"></div>
+            <div id="show-bpm3" class="show-bpm"></div>
+            <div id="show-bpm4" class="show-bpm"></div>
+        </div>
+    </div>
+    <div id="button-grid"></div>
+</div>
+
+<div id="light_control" class="container">
+    <p class="container-title">light control block</p>
+
+    <div id="light_coloring" class="sub-container">
+        <div class="sub-container-title">RGB selector</div>
+        <div id="color-sliders">
+            <input type="range" class="slider" id="red-slider" min="0" max="255" value="0">
+            <input type="range" class="slider" id="green-slider" min="0" max="255" value="0">
+            <input type="range" class="slider" id="blue-slider" min="0" max="255" value="0">
+        </div>
+        <div id="color-display">
+            <p id="red-value">---</p>
+            <p id="green-value">---</p>
+            <p id="blue-value">---</p>
+        </div>
+
+        <div id="color_mixed"></div>
+        "
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
