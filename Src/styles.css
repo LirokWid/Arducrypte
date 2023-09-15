@@ -47,6 +47,14 @@ input[type="number"] {
     outline: none;
 }
 
+#color_picker {
+    grid-column: 3 / 4;
+    grid-row: 4;
+    color: white;
+    border: none;
+    outline: none;
+}
+
 #bpm-setup {
     display: flex;
     flex-direction: row;

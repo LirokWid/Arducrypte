@@ -6,7 +6,7 @@ const buttonGrid = document.getElementById('button-grid');
 const resetBpmButton = document.getElementById('reset-bpm-button');
 
 //global vars
-let bpm = 140;
+let bpm = 145;
 
 const red_slider = document.getElementById('red-slider');
 const green_slider = document.getElementById('green-slider');
@@ -17,6 +17,9 @@ const color_box = document.getElementById('color_mixed');
 const data = {
     bpm: 145,
     animation: 'Hello, World!',
+    red: 0,
+    green: 0,
+    blue: 0,
     getValue1: function () {
         return this.bpm;
     },
@@ -31,6 +34,10 @@ green_slider.addEventListener('input', change_mixed_color);
 blue_slider.addEventListener('input', change_mixed_color);
 
 
+const redValue = document.getElementById('red-value');
+const greenValue = document.getElementById('green-value');
+const blueValue = document.getElementById('blue-value');
+
 function change_mixed_color() {
     const box = document.getElementById('color_mixed');
 
@@ -39,9 +46,9 @@ function change_mixed_color() {
     let green = green_slider.value;
     let blue = blue_slider.value;
 
-    document.getElementById('red-value').textContent = red;
-    document.getElementById('green-value').textContent = green;
-    document.getElementById('blue-value').textContent = blue;
+    redValue.textContent = red;
+    greenValue.textContent = green;
+    blueValue.textContent = blue;
 
 
     box.style.backgroundColor = `rgb(${red},${green},${blue})`;
@@ -64,6 +71,7 @@ function update_bpm(newBpm) {
     //update number input
     bpmInput.value = `${Number(newBpm).toFixed(1)}`;
     clearInterval(newBpm);
+    clearInterval(sequence);
     sequence = setInterval(nextSequence, ((60 / newBpm) * 1000));
 }
 
@@ -118,9 +126,35 @@ document.addEventListener('keydown', (event) => {
     console.log(event.key);
     if (event.key === 'r') {
         resetSequence();
+        resetBpmButton.style.backgroundColor = "red";
+    }
+}, false);
+document.addEventListener('keyup', (event) => {
+    console.log(event.key);
+    if (event.key === 'r') {
+        resetBpmButton.style.backgroundColor = "";
     }
 }, false);
 
+
+const colorPicker = document.getElementById('html5colorpicker');
+colorPicker.addEventListener('input', update_color);
+
+function update_color() {
+    const defaultColor = "#0000ff";
+    const color = colorPicker.value;
+    const box = document.getElementById('color_mixed');
+    box.style.backgroundColor = color;
+
+    red_slider.value = parseInt(color.substring(1, 3), 16);
+    green_slider.value = parseInt(color.substring(3, 5), 16);
+    blue_slider.value = parseInt(color.substring(5, 7), 16);
+    redValue.textContent = parseInt(color.substring(1, 3), 16);
+    greenValue.textContent = parseInt(color.substring(3, 5), 16);
+    blueValue.textContent = parseInt(color.substring(5, 7), 16);
+
+    console.log(color);
+}
 
 function resetSequence() {
     console.log("sequence reset with bpm" + window.bpm);
@@ -140,7 +174,8 @@ function tapBpm() {
 
     const tapBpmButton = document.getElementById("tap-bpm-button");
 
-    function handleTapBpmPress() {    // Function to handle spacebar press
+    function handleTapBpmPress() {
+        // Function to handle spacebar press and calculate BPM
         const currentTime = Date.now();
 
         if (pressCount < tryNumber) {
@@ -155,6 +190,8 @@ function tapBpm() {
             console.log("Press " + (pressCount + 1));
             spaceBarPressTimestamps.push(currentTime);
             pressCount++;
+            tapBpmButton.style.backgroundColor = "red";
+            tapBpmButton.innerText = "Tap " + (pressCount) + "/" + tryNumber + " BPM";
 
             if (pressCount === tryNumber) {
                 const averageInterval = intervalSum / (tryNumber - 1); // Calculate average of three intervals
@@ -163,6 +200,8 @@ function tapBpm() {
                 console.log(`Bpm : ${foundBpm}`);
                 update_bpm(Math.round(foundBpm));
                 clearTimeout(timeoutHandle);
+                tapBpmButton.style.backgroundColor = "";
+                tapBpmButton.innerText = "Tap BPM";
                 tapBpm();
             }
         }
@@ -173,6 +212,8 @@ function tapBpm() {
         pressCount = 0;
         spaceBarPressTimestamps = [];
         intervalSum = 0;
+        tapBpmButton.style.backgroundColor = "";
+        tapBpmButton.innerText = "Tap BPM";
     }
 
     document.addEventListener('keydown', (event) => {
@@ -186,10 +227,6 @@ function tapBpm() {
         handleTapBpmPress();
     });
 }
-
-// Call the function to start listening for spacebar presses
-tapBpm();
-
 
 function nextSequence() {
     updateBlinkersVisibility(index);
@@ -208,3 +245,5 @@ function updateBlinkersVisibility(currentIndex) {
 
 // Call nextSequence() at regular intervals
 let sequence = setInterval(nextSequence, ((60 / bpm) * 1000));
+// Call the function to start listening for spacebar presses
+tapBpm();
