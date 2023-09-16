@@ -13,7 +13,13 @@
 <body>
 
 <div id="bpm">
-    <h1>BPM set</h1>
+    <h1>Arducrypte led controller</h1>
+    <div id="server-status">
+        <p>Server status: <span id="server-status-text">OFFLINE</span></p>
+    </div>
+    <div id="logWindow">
+        <pre id="logger"></pre>
+    </div>
     <div id="bpm-control">
         <div id="bpm-display">
             <input type="number" id="bpm-input" min="60.0" max="210.0" value="140">

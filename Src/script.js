@@ -74,7 +74,7 @@ colorButtons.forEach((button) => {
 //BPM functions
 function update_bpm(newBpm) {
     window.bpm = newBpm;
-    //console.log("BPM set to : " + bpm);
+    //logThis("BPM set to : " + bpm);
     //update slider position
     bpmSlider.value = Number(newBpm);
     //update number input
@@ -141,7 +141,7 @@ function tapBpm() {
                 const interval = currentTime - spaceBarPressTimestamps[pressCount - 1];
                 intervalSum += interval;
             }
-            console.log("Press " + (pressCount + 1));
+            logThis("Press " + (pressCount + 1));
             spaceBarPressTimestamps.push(currentTime);
             pressCount++;
             tapBpmButton.style.backgroundColor = "red";
@@ -149,9 +149,9 @@ function tapBpm() {
 
             if (pressCount === tryNumber) {
                 const averageInterval = intervalSum / (tryNumber - 1); // Calculate average of three intervals
-                console.log(`Average time between presses: ${averageInterval} milliseconds`);
+                logThis(`Average time between presses: ${averageInterval} milliseconds`);
                 let foundBpm = 60000 / (averageInterval);
-                console.log(`Bpm : ${foundBpm}`);
+                logThis(`Bpm : ${foundBpm}`);
                 update_bpm(Math.round(foundBpm));
                 clearTimeout(timeoutHandle);
                 tapBpmButton.style.backgroundColor = "";
@@ -162,7 +162,7 @@ function tapBpm() {
     }
 
     function resetTapBpm() {
-        console.log("timeout reset");
+        logThis("timeout reset");
         pressCount = 0;
         spaceBarPressTimestamps = [];
         intervalSum = 0;
@@ -202,7 +202,7 @@ function sequenceControl() {
     }
 
     function restart() {
-        console.log("sequence reset with bpm" + bpm);
+        logThis("sequence reset with bpm" + bpm);
         index = 0;
         next();
         start(bpm);
@@ -248,7 +248,7 @@ function update_color() {
     redValue.textContent = parseInt(color.substring(1, 3), 16);
     greenValue.textContent = parseInt(color.substring(3, 5), 16);
     blueValue.textContent = parseInt(color.substring(5, 7), 16);
-    console.log(color);
+    logThis(color);
 }
 
 function initColorButtons() {
@@ -261,6 +261,63 @@ function initColorButtons() {
         const b = parseInt(hex.toString().substring(5, 7), 16);
         const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
         button.style.color = (yiq > 125) ? 'black' : 'white';
+    }
+}
+
+//Server functions
+function serverCom() {
+    const gateway = `ws://${window.location.hostname}/ws`;
+    const serverStatusText = document.getElementById('server-status-text');
+    let websocket = null;
+    window.addEventListener('load', onload);
+
+    function onload(event) {
+        initWebSocket();
+    }
+
+    function initWebSocket() {
+        logThis('Trying to open a WebSocket connection…');
+        websocket = new WebSocket(gateway);
+        websocket.onopen = onOpen;
+        websocket.onclose = onClose;
+        websocket.onmessage = onMessage;
+    }
+
+    function onOpen(event) {
+        logThis('Connection opened');
+        serverStatusText.textContent = "Connected";
+        getValues();
+    }
+
+    function onClose(event) {
+        logThis('Connection closed');
+        serverStatusText.textContent = "Disconnected";
+        setTimeout(initWebSocket, 2000);
+    }
+
+    function getValues() {
+        websocket.send("getValues");
+    }
+
+    /*
+    function updateSliderPWM(element) {
+        var sliderNumber = element.id.charAt(element.id.length - 1);
+        var sliderValue = document.getElementById(element.id).value;
+        document.getElementById("sliderValue" + sliderNumber).innerHTML = sliderValue;
+        logThis(sliderValue);
+        websocket.send(sliderNumber + "s" + sliderValue.toString());
+    }
+    */
+
+    function onMessage(event) {
+        logThis(event.data);
+        let myObj = JSON.parse(event.data);
+        let keys = Object.keys(myObj);
+        //for (let i = 0; i < keys.length; i++) {
+        //    let key = keys[i];
+        //    document.getElementById(key).innerHTML = myObj[key];
+        //    document.getElementById("slider" + (i + 1).toString()).value = myObj[key];
+        //}
     }
 }
 
@@ -465,8 +522,40 @@ function HSVtoRGB(h, s, v) {
     };
 }
 
+function logThis(message) {
+    // if we pass an Error object, message.stack will have all the details, otherwise give us a string
+    if (typeof message === 'object') {
+        message = message.stack || objToString(message);
+    }
+
+    console.log(message);
+
+    // create the message line with current time
+    const now = new Date();
+    const date = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
+    const time = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+    const dateTime = date + ' ' + time + ' ';
+
+    const log = document.getElementById('logger');
+    log.insertAdjacentHTML('afterbegin', "<p>" + dateTime + message + "<//p>");
+    if (log.getElementsByTagName('p').length > 3) {    // Delete old logs
+        log.removeChild(log.lastChild);
+    }
+}
+
+function objToString(obj) {
+    let str = 'Object: ';
+    for (let p in obj) {
+        if (obj.hasOwnProperty(p)) {
+            str += p + '::' + obj[p] + ',\n';
+        }
+    }
+    return str;
+}
+
 //Main///////////////////////////////////////////
 initColorButtons();
 sequence.start(bpm);
 tapBpm();
-
+const server = serverCom();
+logThis("Script loaded");

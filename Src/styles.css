@@ -5,10 +5,32 @@ body {
     font-family: Arial, sans-serif; /* Police de caractères */
 }
 
+
+h1 {
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 2em;
+    text-align: center;
+}
+
 /* BPM */
 /* Couleur de fond des éléments de contrôle */
+#logWindow {
+    overflow: auto;
+    width: 90%;
+    height: 50%;
+    left: 5%;
+    right: 5%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 20;
+}
 
-/* CSS for the show-bpm class */
+#logWindow > p {
+    color: white;
+    font-size: 1em;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
 
 #button-grid {
     background-color: #1e1e1e;
