@@ -1,67 +1,85 @@
+//Variables declaration///////////////////////////
+//Global variables
+let bpm = 145;
+
+//BPM variables
 const bpmSlider = document.getElementById('bpm-slider');
 const bpmInput = document.getElementById('bpm-input');
 const bpmValue = document.getElementById('bpm-value');
-const buttonGrid = document.getElementById('button-grid');
-
 const resetBpmButton = document.getElementById('reset-bpm-button');
+const buttonIds = ['show-bpm1', 'show-bpm2', 'show-bpm3', 'show-bpm4'];
+const blinkers = buttonIds.map((buttonId, index) => bpmBlinker(buttonId, index));
 
-//global vars
-let bpm = 145;
-
+//COLOR variables
 const red_slider = document.getElementById('red-slider');
 const green_slider = document.getElementById('green-slider');
 const blue_slider = document.getElementById('blue-slider');
-
-const color_box = document.getElementById('color_mixed');
-
-const data = {
-    bpm: 145,
-    animation: 'Hello, World!',
-    red: 0,
-    green: 0,
-    blue: 0,
-    getValue1: function () {
-        return this.bpm;
-    },
-    getValue2: function () {
-        return this.animation;
-    },
-};
-
-
-red_slider.addEventListener('input', change_mixed_color);
-green_slider.addEventListener('input', change_mixed_color);
-blue_slider.addEventListener('input', change_mixed_color);
-
-
 const redValue = document.getElementById('red-value');
 const greenValue = document.getElementById('green-value');
 const blueValue = document.getElementById('blue-value');
+const colorPicker = document.getElementById('html5colorpicker');
+const colorButtons = document.querySelectorAll('.color-shortcut-button');
+/////////////////////////////////////////////////
 
-function change_mixed_color() {
-    const box = document.getElementById('color_mixed');
+//Events/////////////////////////////////////////
+//Global events
+document.addEventListener('keyup', (event) => {
+    console.log(event.key);
+    if (event.key === 'r') {
+        resetBpmButton.style.backgroundColor = "";
+    }
+}, false);
+document.addEventListener('keydown', (event) => {
+    console.log(event.key);
+    if (event.key === 'r') {
+        resetSequence();
+        resetBpmButton.style.backgroundColor = "red";
+    }
+}, false);
 
-
-    let red = red_slider.value;
-    let green = green_slider.value;
-    let blue = blue_slider.value;
-
-    redValue.textContent = red;
-    greenValue.textContent = green;
-    blueValue.textContent = blue;
-
-
-    box.style.backgroundColor = `rgb(${red},${green},${blue})`;
-}
-
-
+//BPM events
 bpmSlider.addEventListener('input', () => {
     update_bpm(bpmSlider.value);
 });
 bpmInput.addEventListener('focusout', () => {
     update_bpm(bpmInput.value);
 });
+resetBpmButton.addEventListener('click', resetSequence);
 
+//COLOR events
+red_slider.addEventListener('input', change_mixed_color);
+green_slider.addEventListener('input', change_mixed_color);
+blue_slider.addEventListener('input', change_mixed_color);
+colorPicker.addEventListener('input', update_color);
+colorButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        if (button.textContent === "RANDOM") {
+            const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+            button.style.backgroundColor = "#" + randomColor;
+            button.style.color = "white";
+            colorPicker.value = "#" + randomColor;
+        } else {
+            colorPicker.value = colorNameToHex(button.innerText);
+        }
+        update_color();
+    });
+});
+/////////////////////////////////////////////////
+
+//Functions//////////////////////////////////////
+function change_mixed_color() {
+    const box = document.getElementById('color_mixed');
+
+    let red = red_slider.value;
+    let green = green_slider.value;
+    let blue = blue_slider.value;
+
+    redValue.textContent = red.toString();
+    greenValue.textContent = green.toString();
+    blueValue.textContent = blue.toString();
+
+    box.style.backgroundColor = `rgb(${red},${green},${blue})`;
+}
 
 function update_bpm(newBpm) {
     window.bpm = newBpm;
@@ -75,8 +93,7 @@ function update_bpm(newBpm) {
     sequence = setInterval(nextSequence, ((60 / newBpm) * 1000));
 }
 
-
-function bpmBlinker(buttonId, index) {
+function bpmBlinker(buttonId) {
 
     const button = document.getElementById(buttonId);
     let bpm = window.bpm;
@@ -112,36 +129,9 @@ function bpmBlinker(buttonId, index) {
     return {setBPM, toggleVisibility, setVisible, setInvisible};// Expose functions
 }
 
-const buttonIds = ['show-bpm1', 'show-bpm2', 'show-bpm3', 'show-bpm4'];
-const blinkers = buttonIds.map((buttonId, index) => bpmBlinker(buttonId, index));
-
-for (let i = 0; i < blinkers.length; i++) {
-    blinkers[i].toggleVisibility();
-}
-
 let index = 0;
-resetBpmButton.addEventListener('click', resetSequence);
-
-document.addEventListener('keydown', (event) => {
-    console.log(event.key);
-    if (event.key === 'r') {
-        resetSequence();
-        resetBpmButton.style.backgroundColor = "red";
-    }
-}, false);
-document.addEventListener('keyup', (event) => {
-    console.log(event.key);
-    if (event.key === 'r') {
-        resetBpmButton.style.backgroundColor = "";
-    }
-}, false);
-
-
-const colorPicker = document.getElementById('html5colorpicker');
-colorPicker.addEventListener('input', update_color);
 
 function update_color() {
-    const defaultColor = "#0000ff";
     const color = colorPicker.value;
     const box = document.getElementById('color_mixed');
     box.style.backgroundColor = color;
@@ -152,7 +142,6 @@ function update_color() {
     redValue.textContent = parseInt(color.substring(1, 3), 16);
     greenValue.textContent = parseInt(color.substring(3, 5), 16);
     blueValue.textContent = parseInt(color.substring(5, 7), 16);
-
     console.log(color);
 }
 
@@ -222,10 +211,7 @@ function tapBpm() {
             document.activeElement.blur();
         }
     });
-
-    tapBpmButton.addEventListener('click', (event) => {
-        handleTapBpmPress();
-    });
+    tapBpmButton.addEventListener('click', handleTapBpmPress);
 }
 
 function nextSequence() {
@@ -243,25 +229,6 @@ function updateBlinkersVisibility(currentIndex) {
     }
 }
 
-// Call nextSequence() at regular intervals
-let sequence = setInterval(nextSequence, ((60 / bpm) * 1000));
-// Call the function to start listening for spacebar presses
-tapBpm();
-
-//change buttons color based on their names
-const colorButtons = document.querySelectorAll('.color-shortcut-button');
-for (let i = 0; i < colorButtons.length; i++) {
-    const button = colorButtons[i];
-    const hex = colorNameToHex(button.innerText);
-    button.style.backgroundColor = hex;
-    const r = parseInt(hex.toString().substring(1, 3), 16);
-    const g = parseInt(hex.toString().substring(3, 5), 16);
-    const b = parseInt(hex.toString().substring(5, 7), 16);
-    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    button.style.color = (yiq > 125) ? 'black' : 'white';
-}
-
-//change buttons color based on their names
 function colorNameToHex(colour) {
     var colours = {
         "aliceblue": "#f0f8ff",
@@ -411,11 +378,20 @@ function colorNameToHex(colour) {
     return false;
 }
 
-//add event listener to all buttons
-colorButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-        const hex = colorNameToHex(button.innerText);
-        colorPicker.value = hex;
-        update_color();
-    });
-});
+
+//Main///////////////////////////////////////////
+let sequence = setInterval(nextSequence, ((60 / bpm) * 1000));
+
+for (let i = 0; i < colorButtons.length; i++) {//change buttons color based on their names
+    const button = colorButtons[i];
+    const hex = colorNameToHex(button.innerText);
+    button.style.backgroundColor = hex;
+    const r = parseInt(hex.toString().substring(1, 3), 16);
+    const g = parseInt(hex.toString().substring(3, 5), 16);
+    const b = parseInt(hex.toString().substring(5, 7), 16);
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    button.style.color = (yiq > 125) ? 'black' : 'white';
+}
+
+tapBpm();
+
