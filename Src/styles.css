@@ -9,24 +9,26 @@ body {
 h1 {
     color: #ffffff;
     font-family: Arial, sans-serif;
-    font-size: 2em;
+    font-size: 1.5em;
     text-align: center;
 }
 
 /* BPM */
 /* Couleur de fond des éléments de contrôle */
 #logWindow {
-    overflow: auto;
-    width: 90%;
-    height: 50%;
+    overflow: scroll;
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+    width: 100%;
+    height: 100px;
     left: 5%;
     right: 5%;
+
+    margin-bottom: 1%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 20;
 }
 
-#logWindow > p {
-    color: white;
+.log > p {
+    color: lime;
     font-size: 1em;
     margin-top: 1px;
     margin-bottom: 1px;
@@ -139,6 +141,8 @@ input[type="number"] {
     text-align: center;
     font-size: larger;
     height: fit-content;
+    margin-block-start: 0;
+    margin-block-end: 0;
 }
 
 .sub-container {
@@ -225,6 +229,24 @@ input[type="number"] {
     border-radius: 5px;
     padding: 10px 20px;
     margin: 5px;
+    cursor: pointer;
+}
+
+#animation-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-content: space-around;
+    width: 100%;
+    height: available;
+}
+
+.animation-button {
+    background-color: #333;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 1px;
     cursor: pointer;
 }
 

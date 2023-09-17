@@ -1,7 +1,13 @@
 //Variables declaration///////////////////////////
 
 //Global variables
-let bpm = 145;
+const data = {
+    bpm: 145,
+    instantBpm: 145,
+    color: "#ffffff",
+    animation: "none"
+}
+
 const sequence = sequenceControl();
 
 //BPM variables
@@ -9,8 +15,6 @@ const bpmSlider = document.getElementById('bpm-slider');
 const bpmInput = document.getElementById('bpm-input');
 const bpmValue = document.getElementById('bpm-value');
 const resetBpmButton = document.getElementById('reset-bpm-button');
-const buttonIds = ['show-bpm1', 'show-bpm2', 'show-bpm3', 'show-bpm4'];
-const blinkers = buttonIds.map((buttonId, index) => bpmBlinker(buttonId, index));
 
 //COLOR variables
 const red_slider = document.getElementById('red-slider');
@@ -42,10 +46,13 @@ document.addEventListener('keydown', (event) => {
 
 //BPM events
 bpmSlider.addEventListener('input', () => {
-    update_bpm(bpmSlider.value);
+    updateInstantBpm(bpmSlider.value);
+});
+bpmSlider.addEventListener('click', () => {
+    updateBpm(bpmSlider.value);
 });
 bpmInput.addEventListener('focusout', () => {
-    update_bpm(bpmInput.value);
+    updateBpm(bpmInput.value);
 });
 resetBpmButton.addEventListener('click', sequence.restart);
 
@@ -72,51 +79,24 @@ colorButtons.forEach((button) => {
 //Functions//////////////////////////////////////
 
 //BPM functions
-function update_bpm(newBpm) {
-    window.bpm = newBpm;
-    //logThis("BPM set to : " + bpm);
-    //update slider position
-    bpmSlider.value = Number(newBpm);
-    //update number input
-    bpmInput.value = `${Number(newBpm).toFixed(1)}`;
-    clearInterval(newBpm);
-    sequence.start(newBpm);
+function updateInstantBpm(newBpm) {
+    data.instantBpm = newBpm;
+
+    bpmSlider.value = Number(newBpm);    //update slider position
+    bpmInput.value = `${Number(newBpm).toFixed(1)}`;    //update number input
+    //sequence.start(newBpm);
+    //server.sendBpm(newBpm);
 }
 
-function bpmBlinker(buttonId) {
-
-    const button = document.getElementById(buttonId);
-    let bpm = window.bpm;
-    let isVisible = true;
-    let intervalId;
-
-
-    function toggleVisibility() {// Function to toggle the button's visibility
-        isVisible = !isVisible;
-        button.style.visibility = isVisible ? 'visible' : 'hidden';
-    }
-
-    function setVisible() {// Function to toggle the button's visibility
-        isVisible = !isVisible;
-        button.style.visibility = 'visible';
-    }
-
-    function setInvisible() {// Function to toggle the button's visibility
-        button.style.visibility = 'hidden';
-    }
-
-    function updateInterval() {// Function to update the blinking interval based on subdivision
-        clearInterval(intervalId);
-        const interval = (60 / bpm) * 1000;
-        intervalId = setInterval(toggleVisibility, interval);
-    }
-
-    function setBPM(newBpm) {// Function to change the BPM dynamically
-        bpm = newBpm;
-        updateInterval();
-    }
-
-    return {setBPM, toggleVisibility, setVisible, setInvisible};// Expose functions
+function updateBpm(newBpm) {
+    logThis("BPM changed to " + newBpm);
+    data.bpm = data.instantBpm;
+    bpmSlider.value = Number(newBpm);    //update slider position
+    bpmInput.value = `${Number(newBpm).toFixed(1)}`;    //update number input
+    //sequence.start(newBpm);
+    //server.sendBpm(newBpm);
+    sequence.start(newBpm);
+    server.sendBpm(newBpm);
 }
 
 function tapBpm() {
@@ -152,7 +132,7 @@ function tapBpm() {
                 logThis(`Average time between presses: ${averageInterval} milliseconds`);
                 let foundBpm = 60000 / (averageInterval);
                 logThis(`Bpm : ${foundBpm}`);
-                update_bpm(Math.round(foundBpm));
+                updateBpm(Math.round(foundBpm));
                 clearTimeout(timeoutHandle);
                 tapBpmButton.style.backgroundColor = "";
                 tapBpmButton.innerText = "Tap BPM";
@@ -182,7 +162,11 @@ function tapBpm() {
 function sequenceControl() {
     let index = 0;
     let intervalHandle = null;
-    let bpm = window.bpm;
+    let bpm = data.bpm;
+
+    const buttonIds = ['show-bpm1', 'show-bpm2', 'show-bpm3', 'show-bpm4'];
+    const blinkers = buttonIds.map((buttonId, index) => bpmBlinker(buttonId, index));
+
 
     function start(startBpm) {
         bpm = startBpm;
@@ -216,6 +200,43 @@ function sequenceControl() {
                 blinkers[i].setVisible();
             }
         }
+    }
+
+    function bpmBlinker(buttonId) {
+
+
+        const button = document.getElementById(buttonId);
+        let bpm = data.bpm;
+        let isVisible = true;
+        let intervalId;
+
+
+        function toggleVisibility() {// Function to toggle the button's visibility
+            isVisible = !isVisible;
+            button.style.visibility = isVisible ? 'visible' : 'hidden';
+        }
+
+        function setVisible() {// Function to toggle the button's visibility
+            isVisible = !isVisible;
+            button.style.visibility = 'visible';
+        }
+
+        function setInvisible() {// Function to toggle the button's visibility
+            button.style.visibility = 'hidden';
+        }
+
+        function updateInterval() {// Function to update the blinking interval based on subdivision
+            clearInterval(intervalId);
+            const interval = (60 / bpm) * 1000;
+            intervalId = setInterval(toggleVisibility, interval);
+        }
+
+        function setBPM(newBpm) {// Function to change the BPM dynamically
+            bpm = newBpm;
+            updateInterval();
+        }
+
+        return {setBPM, toggleVisibility, setVisible, setInvisible};// Expose functions
     }
 
     return {start, restart, stop};
@@ -269,11 +290,6 @@ function serverCom() {
     const gateway = `ws://${window.location.hostname}/ws`;
     const serverStatusText = document.getElementById('server-status-text');
     let websocket = null;
-    window.addEventListener('load', onload);
-
-    function onload(event) {
-        initWebSocket();
-    }
 
     function initWebSocket() {
         logThis('Trying to open a WebSocket connection…');
@@ -286,43 +302,71 @@ function serverCom() {
     function onOpen(event) {
         logThis('Connection opened');
         serverStatusText.textContent = "Connected";
-        getValues();
+        websocket.send("getValues");
+
     }
 
     function onClose(event) {
         logThis('Connection closed');
         serverStatusText.textContent = "Disconnected";
-        setTimeout(initWebSocket, 2000);
+        setTimeout(initWebSocket, 5000);
     }
 
-    function getValues() {
-        websocket.send("getValues");
+    function sendBpm(bpm) {
+        if (websocket === null) {
+            logThis("Websocket not initialized");
+        } else {
+            if (websocket.readyState !== WebSocket.CLOSED && websocket.readyState !== WebSocket.CONNECTING) {
+                websocket.send("BPM:" + bpm.toString());
+                logThis("BPM sent to server: " + bpm.toString());
+            } else {
+                logThis("Could not send, Websocket unavailable, state : " + websocket.readyState);
+            }
+        }
     }
 
-    /*
-    function updateSliderPWM(element) {
-        var sliderNumber = element.id.charAt(element.id.length - 1);
-        var sliderValue = document.getElementById(element.id).value;
-        document.getElementById("sliderValue" + sliderNumber).innerHTML = sliderValue;
-        logThis(sliderValue);
-        websocket.send(sliderNumber + "s" + sliderValue.toString());
+    function sendColor(color) {
+        if (websocket.readyState !== WebSocket.CLOSED) {
+            websocket.send("COLOR:" + color);
+            logThis("Color sent to server: " + color);
+        }
     }
-    */
 
     function onMessage(event) {
-        logThis(event.data);
-        let myObj = JSON.parse(event.data);
+        logThis("Server sent : " + event.data);
+        const myObj = JSON.parse(event.data);
         let keys = Object.keys(myObj);
         //for (let i = 0; i < keys.length; i++) {
         //    let key = keys[i];
         //    document.getElementById(key).innerHTML = myObj[key];
         //    document.getElementById("slider" + (i + 1).toString()).value = myObj[key];
         //}
+        //TODO : update sliders
+        //TODO : update color buttons
+        //TODO : update bpm
+    }
+
+    return {initWebSocket, sendBpm, sendColor};
+}
+
+//TOOLS functions
+const fullscreenButton = document.getElementById('fullscreen-button');
+fullscreenButton.addEventListener('click', toggleFullscreen);
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().then(r => {
+            fullscreenButton.innerText = "Exit fullscreen";
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen().then(r => {
+                fullscreenButton.innerText = "Enter fullscreen";
+            });
+        }
     }
 }
 
-
-//TOOLS functions
 function colorNameToHex(colour) {
     var colours = {
         "aliceblue": "#f0f8ff",
@@ -538,7 +582,7 @@ function logThis(message) {
 
     const log = document.getElementById('logger');
     log.insertAdjacentHTML('afterbegin', "<p>" + dateTime + message + "<//p>");
-    if (log.getElementsByTagName('p').length > 3) {    // Delete old logs
+    if (log.getElementsByTagName('p').length > 30) {    // Delete old logs
         log.removeChild(log.lastChild);
     }
 }
@@ -555,7 +599,9 @@ function objToString(obj) {
 
 //Main///////////////////////////////////////////
 initColorButtons();
-sequence.start(bpm);
+sequence.start(data.instantBpm);
 tapBpm();
 const server = serverCom();
+//server.initWebSocket();
+
 logThis("Script loaded");

@@ -16,9 +16,14 @@
     <h1>Arducrypte led controller</h1>
     <div id="server-status">
         <p>Server status: <span id="server-status-text">OFFLINE</span></p>
+        <button id="server-status-button">CONNECT</button>
     </div>
-    <div id="logWindow">
-        <pre id="logger"></pre>
+    <div id="led-status">
+        <p>LED status: <span id="led-status-text">OFF</span></p>
+        <button id="led-status-button">ON</button>
+    </div>
+    <div id="full-screen">
+        <button id="fullscreen-button">FULL SCREEN</button>
     </div>
     <div id="bpm-control">
         <div id="bpm-display">
@@ -37,12 +42,10 @@
             <div id="show-bpm4" class="show-bpm"></div>
         </div>
     </div>
-    <div id="button-grid"></div>
 </div>
 
 <div id="light_control" class="container">
     <p class="container-title">light control block</p>
-
     <div id="light_coloring" class="sub-container">
         <div class="sub-container-title">Color</div>
         <div id="color-sliders">
@@ -76,7 +79,42 @@
             <button id="fade-button" class="color-shortcut-button">FADE</button>
         </div>
     </div>
+    <div id="animation-control" class="sub-container">
+        <div class="sub-container-title">Animation</div>
+        <div id="animation-buttons">
+            <button id="animation1" class="animation-button">Animation 1</button>
+            <button id="animation2" class="animation-button">Animation 2</button>
+            <button id="animation3" class="animation-button">Animation 3</button>
+            <button id="animation4" class="animation-button">Animation 4</button>
+            <button id="animation5" class="animation-button">Animation 5</button>
+            <button id="animation6" class="animation-button">Animation 6</button>
+            <button id="animation7" class="animation-button">Animation 7</button>
+            <button id="animation8" class="animation-button">Animation 8</button>
+            <button id="animation9" class="animation-button">Animation 9</button>
+            <button id="animation10" class="animation-button">Animation 10</button>
+            <button id="animation11" class="animation-button">Animation 11</button>
+            <button id="animation12" class="animation-button">Animation 12</button>
+            <button id="animation13" class="animation-button">Animation 13</button>
+            <button id="animation14" class="animation-button">Animation 14</button>
+            <button id="animation15" class="animation-button">Animation 15</button>
+            <button id="animation16" class="animation-button">Animation 16</button>
+            <button id="animation17" class="animation-button">Animation 17</button>
+            <button id="animation18" class="animation-button">Animation 18</button>
+            <button id="animation19" class="animation-button">Animation 19</button>
+            <button id="animation20" class="animation-button">Animation 20</button>
+            <button id="animation21" class="animation-button">Animation 21</button>
+            <button id="animation22" class="animation-button">Animation 22</button>
+            <button id="animation23" class="animation-button">Animation 23</button>
+            <button id="animation24" class="animation-button">Animation 24</button>
+            <button id="animation25" class="animation-button">Animation 25</button>
+        </div>
+    </div>
 </div>
+
+<div id="logWindow">
+    <pre id="logger" class="log"></pre>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
