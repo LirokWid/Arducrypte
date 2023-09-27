@@ -88,7 +88,7 @@ function updateInstantBpm(newBpm) {
     //server.sendBpm(newBpm);
 }
 
-function updateBpm(newBpm) {
+function updateBpm(newBpm, sendToServer = true) {
     logThis("BPM changed to " + newBpm);
     data.bpm = data.instantBpm;
     bpmSlider.value = Number(newBpm);    //update slider position
@@ -96,7 +96,10 @@ function updateBpm(newBpm) {
     //sequence.start(newBpm);
     //server.sendBpm(newBpm);
     sequence.start(newBpm);
-    server.sendBpm(newBpm);
+
+    if (sendToServer) {
+        server.sendBpm(newBpm);
+    }
 }
 
 function tapBpm() {
@@ -166,7 +169,6 @@ function sequenceControl() {
 
     const buttonIds = ['show-bpm1', 'show-bpm2', 'show-bpm3', 'show-bpm4'];
     const blinkers = buttonIds.map((buttonId, index) => bpmBlinker(buttonId, index));
-
 
     function start(startBpm) {
         bpm = startBpm;
@@ -336,14 +338,16 @@ function serverCom() {
         logThis("Server sent : " + event.data);
         const myObj = JSON.parse(event.data);
         let keys = Object.keys(myObj);
-        //for (let i = 0; i < keys.length; i++) {
-        //    let key = keys[i];
-        //    document.getElementById(key).innerHTML = myObj[key];
-        //    document.getElementById("slider" + (i + 1).toString()).value = myObj[key];
-        //}
-        //TODO : update sliders
-        //TODO : update color buttons
-        //TODO : update bpm
+        //Update bpm, animation and color   
+        data.bpm = myObj["BPM"];
+        data.animation = myObj["ANIMATION"];
+        data.color = myObj["COLOR"];
+        //Update UI
+        updateBpm(data.bpm, false);
+        change_mixed_color();
+        update_color();
+        //Update sequence
+        sequence.start(data.bpm);
     }
 
     return {initWebSocket, sendBpm, sendColor};
@@ -368,7 +372,7 @@ function toggleFullscreen() {
 }
 
 function colorNameToHex(colour) {
-    var colours = {
+    const colours = {
         "aliceblue": "#f0f8ff",
         "antiquewhite": "#faebd7",
         "aqua": "#00ffff",
@@ -597,11 +601,11 @@ function objToString(obj) {
     return str;
 }
 
+
 //Main///////////////////////////////////////////
 initColorButtons();
 sequence.start(data.instantBpm);
 tapBpm();
 const server = serverCom();
-//server.initWebSocket();
-
+server.initWebSocket();
 logThis("Script loaded");

@@ -8,21 +8,18 @@
     <style>
         @import url('https://fonts.cdnfonts.com/css/motomangucode');
     </style>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 
 </head>
 <body>
 
 <div id="bpm">
     <h1>Arducrypte led controller</h1>
-    <div id="server-status">
+    <div id="server-status" class="topLeftCorner">
         <p>Server status: <span id="server-status-text">OFFLINE</span></p>
         <button id="server-status-button">CONNECT</button>
     </div>
-    <div id="led-status">
-        <p>LED status: <span id="led-status-text">OFF</span></p>
-        <button id="led-status-button">ON</button>
-    </div>
-    <div id="full-screen">
+    <div id="full-screen" class="topRightCorner">
         <button id="fullscreen-button">FULL SCREEN</button>
     </div>
     <div id="bpm-control">
@@ -47,7 +44,7 @@
 <div id="light_control" class="container">
     <p class="container-title">light control block</p>
     <div id="light_coloring" class="sub-container">
-        <div class="sub-container-title">Color</div>
+        <div class="sub-container-title">Fixed color</div>
         <div id="color-sliders">
             <input type="range" class="slider" id="red-slider" min="0" max="255" value="0">
             <input type="range" class="slider" id="green-slider" min="0" max="255" value="0">
