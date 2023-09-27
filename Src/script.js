@@ -102,6 +102,7 @@ function updateBpm(newBpm, sendToServer = true) {
     }
 }
 
+
 function tapBpm() {
     const timeout = 5000;
     let timeoutHandle = null;
@@ -260,7 +261,7 @@ function change_mixed_color() {
     box.style.backgroundColor = `rgb(${red},${green},${blue})`;
 }
 
-function update_color() {
+function update_color(sendToServer = true) {
     const color = colorPicker.value;
     const box = document.getElementById('color_mixed');
     box.style.backgroundColor = color;
@@ -271,6 +272,10 @@ function update_color() {
     redValue.textContent = parseInt(color.substring(1, 3), 16);
     greenValue.textContent = parseInt(color.substring(3, 5), 16);
     blueValue.textContent = parseInt(color.substring(5, 7), 16);
+    data.color = color;
+    if (sendToServer) {
+        server.sendColor(data.color)
+    }
     logThis(color);
 }
 
@@ -328,9 +333,21 @@ function serverCom() {
     }
 
     function sendColor(color) {
-        if (websocket.readyState !== WebSocket.CLOSED) {
-            websocket.send("COLOR:" + color);
-            logThis("Color sent to server: " + color);
+        console.log("sending " + color);
+        if (websocket === null) {
+            logThis("Websocket not initialized");
+        } else {
+            if (websocket.readyState !== WebSocket.CLOSED && websocket.readyState !== WebSocket.CONNECTING) {
+                //convert color to hex string and send it
+                //remove the first character (#)
+                const hex = color.toString();
+                websocket.send("COLOR:" + hex);
+                console.log("after_  " + hex);
+
+                logThis("Color sent to server: " + hex);
+            } else {
+                logThis("Could not send, Websocket unavailable, state : " + websocket.readyState);
+            }
         }
     }
 
@@ -345,7 +362,7 @@ function serverCom() {
         //Update UI
         updateBpm(data.bpm, false);
         change_mixed_color();
-        update_color();
+        update_color(false);
         //Update sequence
         sequence.start(data.bpm);
     }
