@@ -20,11 +20,17 @@ const resetBpmButton = document.getElementById('reset-bpm-button');
 const red_slider = document.getElementById('red-slider');
 const green_slider = document.getElementById('green-slider');
 const blue_slider = document.getElementById('blue-slider');
+const brightnessSlider = document.getElementById('brightness-slider');
 const redValue = document.getElementById('red-value');
 const greenValue = document.getElementById('green-value');
 const blueValue = document.getElementById('blue-value');
+const brightnessValue = document.getElementById('brightness-value');
 const colorPicker = document.getElementById('html5colorpicker');
 const colorButtons = document.querySelectorAll('.color-shortcut-button');
+
+//animations variables
+const animationButtons = document.querySelectorAll('.animation-button');
+const animationMode = document.getElementById('animation-mode');
 /////////////////////////////////////////////////
 
 //Events/////////////////////////////////////////
@@ -57,10 +63,22 @@ bpmInput.addEventListener('focusout', () => {
 resetBpmButton.addEventListener('click', sequence.restart);
 
 //COLOR events
-red_slider.addEventListener('input', change_mixed_color);
-green_slider.addEventListener('input', change_mixed_color);
-blue_slider.addEventListener('input', change_mixed_color);
-colorPicker.addEventListener('input', update_color);
+red_slider.addEventListener('input', () => {
+    update_color_from_sliders(red_slider);
+});
+green_slider.addEventListener('input', () => {
+    update_color_from_sliders(green_slider);
+});
+blue_slider.addEventListener('input', () => {
+    update_color_from_sliders(blue_slider);
+});
+brightnessSlider.addEventListener('input', () => {
+    update_color_from_sliders(brightnessSlider);
+});
+
+colorPicker.addEventListener('input', () => {
+    update_color_from_sliders(colorPicker);
+});
 colorButtons.forEach((button) => {
     button.addEventListener('click', () => {
         if (button.textContent === "RANDOM") {
@@ -70,10 +88,60 @@ colorButtons.forEach((button) => {
             colorPicker.value = "#" + randomColor.rHex + randomColor.gHex + randomColor.bHex;
         } else {
             colorPicker.value = colorNameToHex(button.innerText);
-        }
-        update_color();
+        }//TODO change color with buttons
+        update_color_from_sliders(colorButtons);
     });
 });
+
+//Animations events
+animationButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        //link button to animation
+        switch (button.textContent) {
+            case "STATIC":
+                data.animation = Animations.STATIC;
+                break;
+            case "BPM":
+                data.animation = Animations.BPM;
+                break;
+            case "STROBE":
+                data.animation = Animations.STROBE;
+                break;
+            case "theaterChaseRainbow":
+                data.animation = Animations.theaterChaseRainbow;
+                break;
+            case "theaterChase":
+                data.animation = Animations.theaterChase;
+                break;
+            case "colorWipe":
+                data.animation = Animations.colorWipe;
+                break;
+            case "colorWipeReverse":
+                data.animation = Animations.colorWipeReverse;
+                break;
+            case "colorWipeRandom":
+                data.animation = Animations.colorWipeRandom;
+                break;
+            case undefined:
+                data.animation = Animations.STATIC;
+                break;
+        }
+        animationMode.textContent = button.textContent;
+        server.sendAnimation(data.animation);
+    });
+});
+
+const Animations = {
+    "STATIC": 0,
+    "BPM": 1,
+    "STROBE": 2,
+    "theaterChaseRainbow": 3,
+    "theaterChase": 4,
+    "colorWipe": 5,
+    "colorWipeReverse": 6,
+    "colorWipeRandom": 7
+}
+
 /////////////////////////////////////////////////
 
 //Functions//////////////////////////////////////
@@ -250,33 +318,97 @@ function sequenceControl() {
 function change_mixed_color() {
     const box = document.getElementById('color_mixed');
 
-    let red = red_slider.value;
-    let green = green_slider.value;
-    let blue = blue_slider.value;
 
-    redValue.textContent = red.toString();
-    greenValue.textContent = green.toString();
-    blueValue.textContent = blue.toString();
+    redValue.textContent = red_slider.value.toString();
+    greenValue.textContent = green_slider.value.toString();
+    blueValue.textContent = blue_slider.value.toString();
+    brightnessValue.textContent = "Brightness : " + brightnessSlider.value.toString();
 
-    box.style.backgroundColor = `rgb(${red},${green},${blue})`;
+    box.style.backgroundColor = `rgb(${red_slider.value},${red_slider.value},${red_slider.value})`;
 }
 
-function update_color(sendToServer = true) {
-    const color = colorPicker.value;
-    const box = document.getElementById('color_mixed');
-    box.style.backgroundColor = color;
+function update_color_from_sliders(slider, sendToServer = true) {
 
-    red_slider.value = parseInt(color.substring(1, 3), 16);
-    green_slider.value = parseInt(color.substring(3, 5), 16);
-    blue_slider.value = parseInt(color.substring(5, 7), 16);
-    redValue.textContent = parseInt(color.substring(1, 3), 16);
-    greenValue.textContent = parseInt(color.substring(3, 5), 16);
-    blueValue.textContent = parseInt(color.substring(5, 7), 16);
-    data.color = color;
+    let box = document.getElementById('color_mixed');
+
+    switch (slider) {
+        case red_slider :
+        case green_slider :
+        case blue_slider:
+            let redHex = parseInt(red_slider.value, 10).toString(16).padStart(2, '0');
+            let greenHex = parseInt(green_slider.value, 10).toString(16).padStart(2, '0');
+            let blueHex = parseInt(blue_slider.value, 10).toString(16).padStart(2, '0');
+            const hex = `#${redHex}${greenHex}${blueHex}`
+            colorPicker.value = hex;
+            data.color = hex;
+            updatePickerAndDisplayColor(hex);
+            updateSlidersFields(hex);
+            if (sendToServer) {
+                server.sendColor(data.color);
+            }
+            break;
+        case brightnessSlider:
+            data.brightness = brightnessSlider.value;
+            brightnessValue.textContent = "Brightness : " + brightnessSlider.value.toString();
+            if (sendToServer) {
+                server.sendBrightness(data.brightness);
+            }
+            break;
+        case colorPicker:
+            const hexColor = colorPicker.value;
+            updatePickerAndDisplayColor(hexColor);
+            updateSlidersPosition(hexColor);
+            updateSlidersFields(hexColor);
+            data.color = hexColor;
+            break;
+            if (sendToServer) {
+                server.sendColor(data.color);
+            }
+        case colorButtons:
+            const hexColor2 = colorPicker.value;
+            updatePickerAndDisplayColor(hexColor2);
+            updateSlidersPosition(hexColor2);
+            updateSlidersFields(hexColor2);
+            data.color = hexColor2;
+            if (sendToServer) {
+                server.sendColor(data.color);
+            }
+            break;
+    }
+
+}
+
+function hexToRgb(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    let color = hex.replace(shorthandRegex, function (m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+}
+
+function updatePickerAndDisplayColor(hexColor) {
+    colorPicker.value = hexColor;
+    document.getElementById('color_mixed').style.backgroundColor = `rgb(${parseInt(hexColor.substring(1, 3), 16)},${parseInt(hexColor.substring(3, 5), 16)},${parseInt(hexColor.substring(5, 7), 16)})`;
+}
+
+function updateSlidersPosition(hexColor) {
+    red_slider.value = parseInt(hexColor.substring(1, 3), 16);
+    green_slider.value = parseInt(hexColor.substring(3, 5), 16);
+    blue_slider.value = parseInt(hexColor.substring(5, 7), 16);
+}
+
+function updateSlidersFields(hexColor) {
+    redValue.textContent = parseInt(hexColor.substring(1, 3), 16).toString();
+    greenValue.textContent = parseInt(hexColor.substring(3, 5), 16).toString();
+    blueValue.textContent = parseInt(hexColor.substring(5, 7), 16).toString();
+}
+
+//TODO : send color to server
+function update_color(sendToServer = true) {
     if (sendToServer) {
         server.sendColor(data.color)
     }
-    logThis(color);
+    logThis(data.color);
 }
 
 function initColorButtons() {
@@ -320,31 +452,38 @@ function serverCom() {
     }
 
     function sendBpm(bpm) {
-        if (websocket === null) {
-            logThis("Websocket not initialized");
-        } else {
-            if (websocket.readyState !== WebSocket.CLOSED && websocket.readyState !== WebSocket.CONNECTING) {
-                websocket.send("BPM:" + bpm.toString());
-                logThis("BPM sent to server: " + bpm.toString());
-            } else {
-                logThis("Could not send, Websocket unavailable, state : " + websocket.readyState);
-            }
-        }
+        send("BPM:" + bpm.toString());
     }
 
     function sendColor(color) {
-        console.log("sending " + color);
+        //do not send if the color has been sent less than 100ms ago
+        if (Date.now() - lastValueSent > sendFrequency) {
+            logThis("Color sent to server: " + color.toString());
+            lastValueSent = Date.now();
+            send("COLOR:" + color.toString());
+        }
+    }
+
+    function sendBrightness(brightness) {
+        //do not send if the color has been sent less than 100ms ago
+        if (Date.now() - lastValueSent > sendFrequency) {
+            logThis("Brightness sent to server: " + brightness.toString());
+            lastValueSent = Date.now();
+            send("BRIGHTNESS:" + brightness.toString());
+        }
+    }
+
+    function sendAnimation(animation) {
+        send("ANIMATION:" + animation);
+    }
+
+    function send(message) {
         if (websocket === null) {
             logThis("Websocket not initialized");
         } else {
             if (websocket.readyState !== WebSocket.CLOSED && websocket.readyState !== WebSocket.CONNECTING) {
-                //convert color to hex string and send it
-                //remove the first character (#)
-                const hex = color.toString();
-                websocket.send("COLOR:" + hex);
-                console.log("after_  " + hex);
-
-                logThis("Color sent to server: " + hex);
+                websocket.send(message);
+                logThis("Message sent to server: " + message);
             } else {
                 logThis("Could not send, Websocket unavailable, state : " + websocket.readyState);
             }
@@ -367,7 +506,14 @@ function serverCom() {
         sequence.start(data.bpm);
     }
 
-    return {initWebSocket, sendBpm, sendColor};
+    function closeWebSocket() {
+        websocket.close();
+    }
+
+    let lastValueSent = 0;
+    const sendFrequency = 100; //ms
+
+    return {initWebSocket, closeWebSocket, sendBpm, sendColor, sendBrightness, sendAnimation};
 }
 
 //TOOLS functions

@@ -51,11 +51,18 @@
             <input type="range" class="slider" id="blue-slider" min="0" max="255" value="0">
         </div>
         <div id="color-display">
-            <p id="red-value">---</p>
-            <p id="green-value">---</p>
-            <p id="blue-value">---</p>
+            <p id="red-value" style="color: red">---</p>
+            <p id="green-value" style="color: green">---</p>
+            <p id="blue-value" style="color: blue">---</p>
         </div>
         <div id="color_mixed"><input type="color" id="html5colorpicker" value="#ffffff" style="width:100%;"></div>
+
+        <div id="brightness">
+            <input type="range" class="slider" id="brightness-slider" min="0" max="255" value="0">
+            <p id="brightness-value">Brightness:---</p>
+        </div>
+
+
         <div id="color-shortcut">
 
             <button id="red-button" class="color-shortcut-button">RED</button>
@@ -77,11 +84,11 @@
         </div>
     </div>
     <div id="animation-control" class="sub-container">
-        <div class="sub-container-title">Animation</div>
+        <div id="animation-mode" class="sub-container-title">Animation mode :</div>
         <div id="animation-buttons">
-            <button id="animation1" class="animation-button">Animation 1</button>
-            <button id="animation2" class="animation-button">Animation 2</button>
-            <button id="animation3" class="animation-button">Animation 3</button>
+            <button id="animation1" class="animation-button">STATIC</button>
+            <button id="animation2" class="animation-button">BPM</button>
+            <button id="animation3" class="animation-button">STROBE</button>
             <button id="animation4" class="animation-button">Animation 4</button>
             <button id="animation5" class="animation-button">Animation 5</button>
             <button id="animation6" class="animation-button">Animation 6</button>
