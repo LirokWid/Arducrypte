@@ -13,6 +13,7 @@
 #include "params.h"
 #include "global.h"
 #include "task.h"
+#include "login.h"
 
 
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len);

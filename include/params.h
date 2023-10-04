@@ -32,11 +32,7 @@
 //Wifi setup
 #define AP_MODE true
 
-#define HOSTNAME "ARduCrypte"
-#define AP_PASSWORD NULL
 
-#define WIFI_SSID  "Freebox-crypte"
-#define WIFI_PASSWORD "wificrypte"
 
 //Webserver setup
 #define SERVER_PORT 80
