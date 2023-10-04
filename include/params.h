@@ -32,7 +32,5 @@
 //Wifi setup
 #define AP_MODE true
 
-
-
 //Webserver setup
 #define SERVER_PORT 80

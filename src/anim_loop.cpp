@@ -1,23 +1,7 @@
-/**
- * @file main.cpp
- * @author LirokWid
- * @brief This is the main file of the project
- * @version 0.1
- * @date 2023-10-04
- * 
- * @copyright 
- * 
- */
 
-#include <Arduino.h>
-#include <FastLED.h>
-#include "params.h"
 
-/**
- * @brief enum for the different animations
- * 
- */
-enum animation
+
+static enum animation
 {
   STATIC,
   BPM,
@@ -30,85 +14,10 @@ enum animation
   SLIDERAIN,
   SLIDELINE
 };
+^
 
 
-
-#include "socket.h"
-#include "animation.h"
-#include "task.h"
-#include "anim_maxime.h"
-#include "anim_vincent.h"
-#include "anim_loop.h"
-
-CRGB leds[NUM_LEDS];
-mainData ledData;
-
-bool bpmTimer(float bpm)
-{
-  static unsigned long previousMillisBpm = 0;
-  unsigned long currentMillisBpm = millis();
-
-  if (currentMillisBpm - previousMillisBpm >= 60000 / bpm)
-  {
-    previousMillisBpm = currentMillisBpm;
-    return 1;
-  }
-  return 0;
-}
-bool millisTimer(int durationMs)
-{
-  static unsigned long previousMillis = 0;
-  unsigned long currentMillis = millis();
-
-  if (currentMillis - previousMillis >= durationMs)
-  {
-    previousMillis = currentMillis;
-    return 1;
-  }
-  return 0;
-}
-void static_animation()
-{
-  // update if rgb value changed
-  if (ledData.color.r != leds[0].r || ledData.color.g != leds[0].g || ledData.color.b != leds[0].b)
-  {
-    for (int i = 0; i < NUM_LEDS; i++)
-    {
-      leds[i].setRGB(ledData.color.r, ledData.color.g, ledData.color.b);
-      FastLED.setBrightness(ledData.brightness);
-      // TODO:Verifier que ça fonctionne
-    }
-    FastLEDshowESP32();
-  }
-}
-void fadeOutBPM(uint16_t bpm)
-{
-  uint16_t fadeDuration = 60000 / bpm; // Calculate fade duration in milliseconds
-  fadeDuration = fadeDuration / 8;
-
-  fadeToBlackBy(leds, NUM_LEDS, 1);
-  delay(fadeDuration / 256);
-}
-
-void pulse(int step, CRGB color)
-{
-}
-
-void setup()
-{
-  Serial.begin(115200);
-
-  ledData.bpm = 150;
-  FastLED.addLeds<WS2812B, DATA_PIN, RGB>(leds, NUM_LEDS); // for GRB LEDs
-  // turn_off();
-  Serial.print("Main code running on core ");
-  Serial.println(xPortGetCoreID());
-  createShowTask();
-  initWebServer();
-  Serial.println("Setup done");
-}
-
-void loop()
+void animation_loop()
 {
 
   static bool state = false;
