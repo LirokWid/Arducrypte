@@ -48,6 +48,25 @@ document.addEventListener('keydown', (event) => {
         sequence.restart();
         resetBpmButton.style.backgroundColor = "red";
     }
+    //If key is a number
+    //do not change if key is space
+
+    if (event.key >= 1 && event.key <= 9) {
+        const animationNumber = event.key - 1;
+        if (animationNumber !== undefined) {
+            data.animation = animationNumber;
+            animationMode.textContent = animationNumber.toString();
+            logThis("Animation changed to " + data.animation)
+            server.sendAnimation(data.animation);
+        }
+    }
+    if (event.key === '°') {
+        const animationNumber = 9;
+        data.animation = animationNumber;
+        animationMode.textContent = animationNumber.toString();
+        logThis("Animation changed to " + data.animation)
+        server.sendAnimation(data.animation);
+    }
 }, false);
 
 //BPM events
@@ -75,7 +94,6 @@ blue_slider.addEventListener('input', () => {
 brightnessSlider.addEventListener('input', () => {
     update_color_from_sliders(brightnessSlider);
 });
-
 colorPicker.addEventListener('input', () => {
     update_color_from_sliders(colorPicker);
 });
@@ -97,37 +115,13 @@ colorButtons.forEach((button) => {
 animationButtons.forEach((button) => {
     button.addEventListener('click', () => {
         //link button to animation
-        switch (button.textContent) {
-            case "STATIC":
-                data.animation = Animations.STATIC;
-                break;
-            case "BPM":
-                data.animation = Animations.BPM;
-                break;
-            case "STROBE":
-                data.animation = Animations.STROBE;
-                break;
-            case "theaterChaseRainbow":
-                data.animation = Animations.theaterChaseRainbow;
-                break;
-            case "theaterChase":
-                data.animation = Animations.theaterChase;
-                break;
-            case "colorWipe":
-                data.animation = Animations.colorWipe;
-                break;
-            case "colorWipeReverse":
-                data.animation = Animations.colorWipeReverse;
-                break;
-            case "colorWipeRandom":
-                data.animation = Animations.colorWipeRandom;
-                break;
-            case undefined:
-                data.animation = Animations.STATIC;
-                break;
+        const animationNumber = Animations[button.textContent];
+        if (animationNumber !== undefined) {
+            data.animation = animationNumber;
+            animationMode.textContent = button.textContent;
+            logThis("Animation changed to " + data.animation)
+            server.sendAnimation(data.animation);
         }
-        animationMode.textContent = button.textContent;
-        server.sendAnimation(data.animation);
     });
 });
 
@@ -135,12 +129,14 @@ const Animations = {
     "STATIC": 0,
     "BPM": 1,
     "STROBE": 2,
-    "theaterChaseRainbow": 3,
-    "theaterChase": 4,
-    "colorWipe": 5,
-    "colorWipeReverse": 6,
-    "colorWipeRandom": 7
-}
+    "FADE_BLACK": 3,
+    "WAVE": 4,
+    "WAVE_FULL": 5,
+    "STROBE_SPARKLING": 6,
+    "PULSE": 7,
+    "RAIN": 8,
+    "SLIDE": 9
+}//TODO: generate animation buttons from this list
 
 /////////////////////////////////////////////////
 
@@ -149,11 +145,8 @@ const Animations = {
 //BPM functions
 function updateInstantBpm(newBpm) {
     data.instantBpm = newBpm;
-
     bpmSlider.value = Number(newBpm);    //update slider position
     bpmInput.value = `${Number(newBpm).toFixed(1)}`;    //update number input
-    //sequence.start(newBpm);
-    //server.sendBpm(newBpm);
 }
 
 function updateBpm(newBpm, sendToServer = true) {
@@ -161,15 +154,11 @@ function updateBpm(newBpm, sendToServer = true) {
     data.bpm = data.instantBpm;
     bpmSlider.value = Number(newBpm);    //update slider position
     bpmInput.value = `${Number(newBpm).toFixed(1)}`;    //update number input
-    //sequence.start(newBpm);
-    //server.sendBpm(newBpm);
     sequence.start(newBpm);
-
     if (sendToServer) {
         server.sendBpm(newBpm);
     }
 }
-
 
 function tapBpm() {
     const timeout = 5000;
@@ -318,7 +307,6 @@ function sequenceControl() {
 function change_mixed_color() {
     const box = document.getElementById('color_mixed');
 
-
     redValue.textContent = red_slider.value.toString();
     greenValue.textContent = green_slider.value.toString();
     blueValue.textContent = blue_slider.value.toString();
@@ -360,6 +348,9 @@ function update_color_from_sliders(slider, sendToServer = true) {
             updateSlidersPosition(hexColor);
             updateSlidersFields(hexColor);
             data.color = hexColor;
+            if (sendToServer) {
+                server.sendColor(data.color);
+            }
             break;
             if (sendToServer) {
                 server.sendColor(data.color);
@@ -376,14 +367,6 @@ function update_color_from_sliders(slider, sendToServer = true) {
             break;
     }
 
-}
-
-function hexToRgb(hex) {
-    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-    let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-    let color = hex.replace(shorthandRegex, function (m, r, g, b) {
-        return r + r + g + g + b + b;
-    });
 }
 
 function updatePickerAndDisplayColor(hexColor) {
@@ -441,7 +424,7 @@ function serverCom() {
     function onOpen(event) {
         logThis('Connection opened');
         serverStatusText.textContent = "Connected";
-        websocket.send("getValues");
+        getValues();
 
     }
 
@@ -466,7 +449,7 @@ function serverCom() {
 
     function sendBrightness(brightness) {
         //do not send if the color has been sent less than 100ms ago
-        if (Date.now() - lastValueSent > sendFrequency) {
+        if (Date.now() - lastValueSent > sendFrequency || brightness === 0 || brightness === 255) {
             logThis("Brightness sent to server: " + brightness.toString());
             lastValueSent = Date.now();
             send("BRIGHTNESS:" + brightness.toString());
@@ -475,6 +458,10 @@ function serverCom() {
 
     function sendAnimation(animation) {
         send("ANIMATION:" + animation);
+    }
+
+    function getValues() {
+        send("getValues");
     }
 
     function send(message) {
@@ -498,10 +485,17 @@ function serverCom() {
         data.bpm = myObj["BPM"];
         data.animation = myObj["ANIMATION"];
         data.color = myObj["COLOR"];
+        data.brightness = myObj["BRIGHTNESS"];
+        //Update sliders
+        updateSlidersFields(data.color);
+        updateSlidersPosition(data.color);
+        brightnessSlider.value = data.brightness;
+        //Update animation
+        animationMode.textContent = data.animation;
+        //Update color
+        updatePickerAndDisplayColor(data.color);
         //Update UI
         updateBpm(data.bpm, false);
-        change_mixed_color();
-        update_color(false);
         //Update sequence
         sequence.start(data.bpm);
     }
@@ -513,7 +507,7 @@ function serverCom() {
     let lastValueSent = 0;
     const sendFrequency = 100; //ms
 
-    return {initWebSocket, closeWebSocket, sendBpm, sendColor, sendBrightness, sendAnimation};
+    return {initWebSocket, closeWebSocket, sendBpm, sendColor, sendBrightness, sendAnimation, getValues};
 }
 
 //TOOLS functions
@@ -681,6 +675,14 @@ function colorNameToHex(colour) {
     if (typeof colours[colour.toLowerCase()] != 'undefined')
         return colours[colour.toLowerCase()];
     return false;
+}
+
+function hexToRgb(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    let color = hex.replace(shorthandRegex, function (m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
 }
 
 function HSVtoRGB(h, s, v) {
