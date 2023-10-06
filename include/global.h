@@ -5,6 +5,10 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include "params.h"
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <Arduino_JSON.h>
+
 
 extern WiFiClient wifi;
 
@@ -30,5 +34,19 @@ struct mainData
   int animationSpeed;
 };
 extern mainData ledData;
+
+enum animation
+{
+  STATIC,
+  BPM,
+  STROBE,
+  FADE_BLACK,
+  WAVE,
+  WAVE_FULL,
+  STROBE_SPARKLING,
+  PULSE,
+  SLIDERAIN,
+  SLIDELINE
+};
 
 #endif

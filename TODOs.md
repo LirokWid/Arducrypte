@@ -8,3 +8,4 @@
 
 ## Add sound bpm support
 
+## Store values in eeprom to keep them after power off
