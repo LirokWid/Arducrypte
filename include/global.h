@@ -1,5 +1,13 @@
-//Define all global variables as externs to be included in other files
-
+/**
+ * @file global.h
+ * @author LirokWid
+ * @brief 
+ * @version 0.1
+ * @date 2023-10-06
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #ifndef GLOBAL_H
 #define GLOBAL_H
 #include <Arduino.h>
@@ -11,20 +19,24 @@
 
 
 extern WiFiClient wifi;
-
-//#include <FastLED.h>        //cascade d'erreur si inclusion ici
-//extern CRGB leds[NUM_LEDS];
-
 extern AsyncWebSocket ws;
 extern AsyncWebServer server;
 extern JSONVar jsonValues;
 
+/**
+ * @brief struct of the color
+ * 
+ */
 struct Color{
   int r;
   int g;
   int b;
 };
 
+/**
+ * @brief struct of the main data
+ * 
+ */
 struct mainData
 {
   float bpm;
@@ -32,9 +44,15 @@ struct mainData
   int animation;
   int brightness;
   int animationSpeed;
+
+  int event;
 };
 extern mainData ledData;
 
+/**
+ * @brief enum of all the animations
+ * 
+ */
 enum animation
 {
   STATIC,
@@ -47,6 +65,15 @@ enum animation
   PULSE,
   SLIDERAIN,
   SLIDELINE
+};
+
+/**
+ * @brief enum of all the animations nodes
+ * 
+ */
+enum animationMode{
+  STATIC_MODE,
+  ANIM_MODE
 };
 
 #endif

@@ -8,33 +8,16 @@
  * @copyright 
  * 
  */
-
 #include <Arduino.h>
 #include <FastLED.h>
-#include "params.h"
-
-/**
- * @brief enum for the different animations
- * 
- */
-
-
-
 #include "socket.h"
 #include "task.h"
-
 #include "anim_loop.h"
+#include "event_loop.h"
 
 CRGB leds[NUM_LEDS];
 mainData ledData;
 
-
-
-
-
-void pulse(int step, CRGB color)
-{
-}
 
 void setup()
 {
@@ -42,7 +25,6 @@ void setup()
 
   ledData.bpm = 150;
   FastLED.addLeds<WS2812B, DATA_PIN, RGB>(leds, NUM_LEDS); // for GRB LEDs
-  // turn_off();
   Serial.print("Main code running on core ");
   Serial.println(xPortGetCoreID());
   createShowTask();
@@ -52,6 +34,7 @@ void setup()
 
 void loop()
 {
+  event_loop();
   animation_loop();
   cleanupClients();
 }

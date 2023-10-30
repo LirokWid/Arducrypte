@@ -6,8 +6,11 @@ extern mainData ledData;
 void animation_loop()
 {
   static bool state = false;
-  int strobe_delay = hz_to_ms(15);
   int sum = 0;
+
+  
+
+
   switch (ledData.animation)
     {
     case STATIC:
@@ -35,7 +38,7 @@ void animation_loop()
       break;
 
     case STROBE:
-      if (millisTimer(strobe_delay))
+      if (millisTimer(hz_to_ms(STROBE_FREQ)))
       {
         if (state)
         {
@@ -74,6 +77,7 @@ void animation_loop()
         FastLEDshowESP32();
       }
       break;
+
     case WAVE_FULL:
       if (millisTimer(bpm_to_ms(ledData.bpm) / ANIMATION_STEPS))
       {
@@ -86,6 +90,7 @@ void animation_loop()
         FastLEDshowESP32();
       }
       break;
+
     case STROBE_SPARKLING:
       if (millisTimer(bpm_to_ms(ledData.bpm) / ANIMATION_STEPS))
       {
@@ -97,6 +102,7 @@ void animation_loop()
         FastLEDshowESP32();
       }
       break;
+
     case PULSE:
       if (millisTimer(bpm_to_ms(ledData.bpm) / PULSE_STEPS))
       {

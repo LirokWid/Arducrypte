@@ -1,11 +1,28 @@
-## regroup animations folders
+### Animations
+- [ ] Bpm dividers
+- [ ] Rainbow animation
+- [ ] Palette based on main color
 
-## cleanup main file
+### ESP32
+- regroup animations folders
 
-## Fade to black
-> - Do not stop the animation
-> - Change brightness curve of the fade
+- cleanup main file
 
-## Add sound bpm support
+- Fade to black
+   - Do not stop the animation
+   - Change brightness curve of the fade
 
-## Store values in eeprom to keep them after power off
+- Add sound bpm support
+
+- Store values in eeprom to keep them after power off
+
+### WEB
+
+- add new subdivisions to the animation side (bpm, color, animation, ...)
+
+- add effets
+
+- add config page to setup the wifi, and more
+
+- Set the animation selected button color to red
+

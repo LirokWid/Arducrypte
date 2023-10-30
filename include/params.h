@@ -7,17 +7,24 @@
 #define STICK_X_NB 4
 #define STICK_Y_NB 3
 
-
 #define DATA_PIN 23
 #define FASTLED_SHOW_CORE 0
 
-//LED setup
-#define LED_BUILTIN 2
 
+//LED setup
+#define LED_BUILTIN     2
 #define ANIMATION_STEPS 10
-#define PULSE_STEPS 100
-#define STICK_PER_LINE 3
-#define NB_LINE 4
+#define PULSE_STEPS     100
+#define STICK_PER_LINE  3     //X
+#define NB_LINE         4     //Y
+
+#define STROBE_FREQ     15
+
+
+//Wifi setup
+#define AP_MODE true
+
+
 #define PROTO
 #ifdef PROTO
   #define BS_NB 0
@@ -28,9 +35,6 @@
 #endif
 
 #define MAIN_NB STICK_NB-BS_NB-BB_NB
-
-//Wifi setup
-#define AP_MODE true
 
 //Webserver setup
 #define SERVER_PORT 80
