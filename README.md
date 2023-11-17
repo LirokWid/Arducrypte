@@ -1,8 +1,11 @@
+# Arducrypte
+Web controler hosted on an ESP32 to control WS2812b leds using a web browser.
 # Arducrypte led controler
 Web page and program for controling WS2812b leds using the FastLED library
 
 This project was made for an ESP32 using PlatformIO as compiler and programer and WebStorm for the web page developpment
 
+This project aims to develop a fast and easy to use interface made for performance.
 ## How to use
 
 1. Clone the repository
