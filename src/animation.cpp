@@ -1,7 +1,5 @@
 #include "animation.h"
-
-
-
+/*
 void strobe_bpm(float bpm,CRGB color)
 {
 
@@ -11,19 +9,19 @@ void strobe_bpm(float bpm,CRGB color)
   {
     leds[i] = color;
   }
-  FastLED.show();
+  FastLEDshowESP32();
   delay(delay_strobe/2);
       for (int i = 0; i < NUM_LEDS; i++)
   {
     leds[i] = CRGB::Black;
   }
-    FastLED.show();
+  FastLEDshowESP32();
   delay(delay_strobe/2);
 }
+*///Old version with delays
 
-void gauche_droite(float bpm,CRGB color,int row,int col)
+void left_right(float bpm,CRGB color,int row,int col)
 {
-
   int nb_mid= (STICK_NB/2)*STICK_LED_NB; 
   int delay_strobe = 60000/bpm;// Pour récupérer le délais par rapport aux bpm
 
@@ -52,7 +50,7 @@ void gauche_droite(float bpm,CRGB color,int row,int col)
   delay(delay_strobe/2);
 }
 
-void colorChaseAnimation(CRGB color, int wait) {
+void color_chase_animatiopn(CRGB color, int wait) {
   for (int i = 0; i < NUM_LEDS; i++) {
     leds[i] = CRGB::Black; // Éteint toutes les LED
   }
@@ -93,12 +91,7 @@ void pulseAnimation(int durationMs)
     }
   }
 }
-void flash_random_stick(int flash_delay,CRGB color)
-{
-  change_stick_color(random_stick_no_repeat(),color);
-  delay(flash_delay);
-  turn_off();
-}
+
 
 void randomSparkleAnimation(int durationMs,CRGB color)
 {
@@ -154,4 +147,39 @@ void beat_bpm(int durationMs, CRGB color1, CRGB color2)
   }
 }
 
+void slide_front_back(int step, CRGB color)
+{
+  //Light the line step position in the x axis
+/*
+  | : stick
+  _ : connection
+   ___    ___
+  |  |   |  |
+  |  |   |  |
+  |  |___|  | 
+  0         
+  */
 
+  //turn off all the previous line
+  for (int i = 0; i < NUM_LEDS; i++)
+  {
+    leds[i] = CRGB::Black; // Éteint toutes les LED
+  }
+
+  for (int i = 0; i < STICK_X_NB; i++)
+  {
+    //Color the line in the X direction
+    if(i % 2 == 0) //if the line is pair
+    {
+      leds[(i*NB_LED_Y  ) + step] = color;
+    }else{
+      leds[(i*NB_LED_Y+1) - step] = color;
+    }
+  }
+}
+void light_random_stick(CRGB color)
+{
+  turn_off();
+  change_stick_color(random_stick_no_repeat(),color);
+  
+}

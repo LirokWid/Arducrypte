@@ -5,7 +5,7 @@ extern CRGB leds[NUM_LEDS];
 
 
 
-CRGB complementary(int r,int g,int b) {
+CRGB complementary_color(int r,int g,int b) {
     return CRGB(255-r,255-g,255-b);
 }
 
@@ -80,7 +80,6 @@ void change_stick_color(int stick_number,CRGB color)
   {
     leds[i] = color;
   }
-  FastLED.show();  
 }
 
 void turn_off()
@@ -104,14 +103,12 @@ void turn_on(CRGB color)
 void fadeall() { for(int i = 0; i < NUM_LEDS; i++) { leds[i].nscale8(250); } }
 
 int random_stick_no_repeat()
-
-
 {
   static int last_random_stick;
   int random_stick = random(0,STICK_NB);
   while(last_random_stick == random_stick)
   {
-    Serial.println("ssame stick avoided");
+    //Serial.println("ssame stick avoided");
     random_stick = random(0,STICK_NB);
   }
   last_random_stick = random_stick;

@@ -17,7 +17,6 @@
 #include <ESPAsyncWebServer.h>
 #include <Arduino_JSON.h>
 
-
 extern WiFiClient wifi;
 extern AsyncWebSocket ws;
 extern AsyncWebServer server;
@@ -64,7 +63,9 @@ enum animation
   STROBE_SPARKLING,
   PULSE,
   SLIDERAIN,
-  SLIDELINE
+  SLIDE_X_LEFT,
+  SLIDE_Y_UP,
+  FLASH_RANDOM_STICK
 };
 
 /**

@@ -4,7 +4,7 @@
 #include <FastLED.h>
 #include "params.h"
 
-CRGB complementary(int r,int g,int b);
+CRGB complementary_color(int r,int g,int b);
 int bpm_to_ms(float bpm);
 void fill_block(int from, int qte, CRGB color);
 void fill_bar(int bar,CRGB color);

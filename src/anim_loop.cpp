@@ -8,9 +8,6 @@ void animation_loop()
   static bool state = false;
   int sum = 0;
 
-  
-
-
   switch (ledData.animation)
     {
     case STATIC:
@@ -73,7 +70,7 @@ void animation_loop()
         wave(
             step,
             CRGB(ledData.color.r, ledData.color.g, ledData.color.b),
-            complementary(ledData.color.r, ledData.color.g, ledData.color.b));
+            complementary_color(ledData.color.r, ledData.color.g, ledData.color.b));
         FastLEDshowESP32();
       }
       break;
@@ -86,7 +83,7 @@ void animation_loop()
         wave_full(
             step,
             CRGB(ledData.color.r, ledData.color.g, ledData.color.b),
-            complementary(ledData.color.r, ledData.color.g, ledData.color.b));
+            complementary_color(ledData.color.r, ledData.color.g, ledData.color.b));
         FastLEDshowESP32();
       }
       break;
@@ -126,7 +123,7 @@ void animation_loop()
       }
       break;
 
-    case SLIDELINE:
+    case SLIDE_X_LEFT:
       if (millisTimer(bpm_to_ms(ledData.bpm) / NB_LIGNE))
       {
         static int step = 0;
@@ -136,6 +133,23 @@ void animation_loop()
             CRGB(ledData.color.r, ledData.color.g, ledData.color.b));
       }
       break;
+
+      case SLIDE_Y_UP:
+      if (millisTimer(bpm_to_ms(ledData.bpm) / NB_LED_LIGNE))
+      {
+        static int step = 0;
+        step = (step + 1) % NB_LIGNE;
+        slide_front_back(
+            step,
+            CRGB(ledData.color.r, ledData.color.g, ledData.color.b));
+      }
+      case FLASH_RANDOM_STICK:
+      //Flash a random stick each 1/4 of the beat
+      if (millisTimer(bpm_to_ms(ledData.bpm) / 4))
+      {
+        light_random_stick(
+        CRGB(ledData.color.r, ledData.color.g, ledData.color.b));
+      }
     default:
       break;
   } 

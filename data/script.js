@@ -135,8 +135,10 @@ const Animations = {
     "STROBE_SPARKLING": 6,
     "PULSE": 7,
     "RAIN": 8,
-    "SLIDE": 9
-}//TODO: generate animation buttons from this list
+    "SLIDE_X_LEFT": 9,
+    "SLIDE_Y_UP": 10,
+    "FLASH_RANDOM_STICK": 11
+}//TODO: generate animation buttons from this list instead of hardcoding them in the html
 
 /////////////////////////////////////////////////
 
@@ -301,8 +303,6 @@ function sequenceControl() {
 
     return {start, restart, stop};
 }
-
-
 //COLOR functions
 function change_mixed_color() {
     const box = document.getElementById('color_mixed');
@@ -765,8 +765,6 @@ function objToString(obj) {
     }
     return str;
 }
-
-
 //Main///////////////////////////////////////////
 initColorButtons();
 sequence.start(data.instantBpm);

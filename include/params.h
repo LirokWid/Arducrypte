@@ -3,9 +3,12 @@
 //Stick setup
 #define STICK_LED_NB 36
 #define STICK_NB 12
-#define NUM_LEDS STICK_LED_NB*STICK_NB
 #define STICK_X_NB 4
 #define STICK_Y_NB 3
+
+#define NUM_LEDS STICK_LED_NB*STICK_NB
+#define NB_LED_Y STICK_LED_NB*STICK_Y_NB
+
 
 #define DATA_PIN 23
 #define FASTLED_SHOW_CORE 0
